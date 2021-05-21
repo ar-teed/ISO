@@ -1,0 +1,455 @@
+install.packages("patchwork")
+library(patchwork)
+library(extrafont)
+font_import()
+
+loadfonts(device="win")       #Register fonts for Windows bitmap output
+
+library(Hmisc)
+library(corrplot)
+ind_div = read.csv("GAD_corr_p5.csv", header=TRUE)
+flattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+    )
+}
+
+HCm <- as.matrix(HCid[,3:22])
+GADm <- as.matrix(GADid[,3:22])
+
+HCr <- rcorr(HCm)
+HCfcm <- flattenCorrMatrix(HCr$r,HCr$P)
+
+HCco <- HCr$r
+HCpv <- HCr$P
+
+GADr <- rcorr(GADm)
+GADfcm <- flattenCorrMatrix(GADr$r,GADr$P)
+
+GADco <- GADr$r
+GADpv <- GADr$P
+
+IDs <- as.matrix(ind_div[,3:22])
+corr3 <- rcorr(IDs)
+fcm3 <- flattenCorrMatrix(corr3$r,corr3$P)
+
+coeff3 <- corr3$r
+p.val3 <- corr3$P
+
+col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+Holm <- corrplot(coeff3, method = "color", col = col(200), type = "upper", order = "hclust",
+number.cex = .7,
+         addCoef.col = "black", # Add coefficient of correlation
+         tl.col = "black", tl.srt = 90, # Text label color and rotation
+         # Combine with significance
+         p.mat = p.val3, sig.level = 0.0003, insig = "blank", 
+         # hide correlation coefficient on the principal diagonal
+         diag = FALSE)		 
+
+BH <- corrplot(coeff3, method = "color", col = col(200), type = "upper", order = "hclust",
+number.cex = .7,
+         addCoef.col = "black", # Add coefficient of correlation
+         tl.col = "black", tl.srt = 90, # Text label color and rotation
+         # Combine with significance
+         p.mat = p.val3, sig.level = 0.025, insig = "blank", 
+         # hide correlation coefficient on the principal diagonal
+         diag = FALSE)		
+
+p.adjust(corr1$P, method = c("holm", "BH"), n = 171)
+
+AN582, BK332, BK626, BK749
+
+
+HRfpc2_HRd
+
+ANX_A.Ins
+HBI_A.Ins
+ANX_Self
+HBI_Self
+RI_Self
+RI_ANX
+HBI_ANX
+HBI_HR
+HBI_Auto
+RI_Auto
+HBI_Val
+OASIS_Auto
+ASIs_Val
+ANX_Auto
+GAD7_Self
+A.Ins_Self
+RI_A.Ins
+
+HCcol <- rgb(0.2, 0.6, 0, 1)
+GADcol <- rgb(0.2, 0.6, 0, 1)
+
+    theme(text=element_text(family="Arial", size=12))+
+	theme(plot.title = element_text(hjust = 0.5), text = element_text(size=20))
+ 
+
+library(patchwork)
+library(extrafont)
+
+HRfpc2_HRd <- ggplot(ind_div, aes(x=HR, y=HR.fpc2)) +
+  geom_point(size=2,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  theme(legend.position = "none")+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=12)) + 
+  theme(axis.title.x = element_text(face="bold", size=12)) +
+  theme_set(theme_gray(base_size=12)) +
+  scale_size_manual(values=3)+ 
+	scale_fill_manual(values=c("#339900FF", "#6666FFFF"))+
+    scale_color_manual(values=c("#339900FF", "#6666FFFF"))+
+  theme(legend.position = "none")+
+  labs(x = 'Heart Rate Δ from Base', y = 'Heart Rate fpc2')
+
+HBI_Self <- ggplot(ind_div, aes(x=HBI, y=Self.fpc1)) +
+  geom_point(size=2,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=12)) + 
+  theme(axis.title.x = element_text(face="bold", size=12)) +
+  theme_set(theme_gray(base_size=12)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  theme(legend.position = "none")+
+  labs(x = 'Heart Beat Intensity', y = 'Self ROI fpc1')
+
+A.Ins_Self <- ggplot(ind_div, aes(x=A.Ins.fpc1, y=Self.fpc1)) +
+  geom_point(size=2,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=12)) + 
+  theme(axis.title.x = element_text(face="bold", size=12)) +
+  theme_set(theme_gray(base_size=12)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'A. Insula ROI fpc1', y = 'Self ROI fpc1')
+
+HR_Auto <- ggplot(ind_div, aes(x=HR, y=Auto.fpc1)) +
+  geom_point(size=2,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=12)) + 
+  theme(axis.title.x = element_text(face="bold", size=12)) +
+  theme_set(theme_gray(base_size=12)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Heart Rate Δ from Base', y = 'Auto ROI fpc1')
+
+OASIS_HBI <- ggplot(ind_div, aes(x=HBI, y=OASIS)) +
+  geom_point(size=2,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=12)) + 
+  theme(axis.title.x = element_text(face="bold", size=12)) +
+  theme_set(theme_gray(base_size=12)) +
+  scale_size_manual(values=3)+ 
+	scale_fill_manual(values=c("#339900FF", "#6666FFFF"))+
+    scale_color_manual(values=c("#339900FF", "#6666FFFF"))+
+  theme(legend.position = "none")+
+  labs(x = 'Heart Beat Intensity', y = 'OASIS')
+
+RI_Self <- ggplot(ind_div, aes(x=RI, y=Self.fpc1)) +
+  geom_point(size=2,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=12)) + 
+  theme(axis.title.x = element_text(face="bold", size=12)) +
+  theme_set(theme_gray(base_size=12)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  theme(legend.position = "none")+
+  labs(x = 'Respiration Intensity', y = 'Self ROI fpc1')
+
+
+###
+
+HRfpc2_HRd <- ggplot(ind_div, aes(x=HR, y=HR.fpc2)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+	scale_fill_manual(values=c("#339900FF", "#6666FFFF"))+
+    scale_color_manual(values=c("#339900FF", "#6666FFFF"))+
+  labs(x = 'Heart Rate Δ from Base', y = 'Heart Rate fpc2')
+
+HBI_Self <- ggplot(ind_div, aes(x=HBI, y=Self.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Heart Beat Intensity', y = 'Self ROI fpc1')
+
+A.Ins_Self <- ggplot(ind_div, aes(x=A.Ins.fpc1, y=Self.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'A. Insula ROI fpc1', y = 'Self ROI fpc1')
+
+HR_Auto <- ggplot(ind_div, aes(x=HR, y=Auto.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Heart Rate Δ from Base', y = 'Auto ROI fpc1')
+
+OASIS_HBI <- ggplot(ind_div, aes(x=HBI, y=OASIS)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+	scale_fill_manual(values=c("#339900FF", "#6666FFFF"))+
+    scale_color_manual(values=c("#339900FF", "#6666FFFF"))+
+  labs(x = 'Heart Beat Intensity', y = 'OASIS')
+
+RI_Self <- ggplot(ind_div, aes(x=RI, y=Self.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Respiration Intensity', y = 'Self ROI fpc1')
+
+CD25_HRd <- ggplot(ind_div, aes(x=CD25, y=HR)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Chronotropic Dose 25', y = 'Heart Rate Δ from Base')
+
+HBI_A.Ins <- ggplot(ind_div, aes(x=HBI, y=A.Ins.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Heart Beat Intensity', y = 'A. Insula ROI fpc1')
+
+ANX_A.Ins <- ggplot(ind_div, aes(x=Anxious, y=A.Ins.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Anxiety', y = 'A. Insula ROI fpc1')
+
+RI_A.Ins <- ggplot(ind_div, aes(x=RI, y=A.Ins.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Respiration Intensity', y = 'A. Insula ROI fpc1')
+
+GAD7_Self <- ggplot(ind_div, aes(x=GAD7, y=Self.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) + 
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'GAD7', y = 'Self ROI fpc1')
+  
+ANX_Self <- ggplot(ind_div, aes(x=Anxious, y=Self.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Anxiety', y = 'Self ROI fpc1')
+
+ANX_Auto <- ggplot(ind_div, aes(x=Anxious, y=Auto.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Anxiety', y = 'Auto ROI fpc1')
+
+ASIs_Val <- ggplot(ind_div, aes(x=ASI.Soc, y=Val.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'ASI - Social', y = 'Valence ROI fpc1')
+
+OASIS_Auto <- ggplot(ind_div, aes(x=OASIS, y=Auto.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'OASIS', y = 'Auto ROI fpc1')
+
+HBI_Val <- ggplot(ind_div, aes(x=HBI, y=Val.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Heart Beat Intensity', y = 'Valence ROI fpc1')
+
+RI_Auto <- ggplot(ind_div, aes(x=RI, y=Auto.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Respiration Intensity', y = 'Auto ROI fpc1')
+
+HBI_Auto <- ggplot(ind_div, aes(x=HBI, y=Auto.fpc1)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Heart Beat Intensity', y = 'Auto ROI fpc1')
+
+HBI_HR <- ggplot(ind_div, aes(x=HBI, y=HR)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Heart Beat Intensity', y = 'Heart Rate')
+
+HBI_ANX <- ggplot(ind_div, aes(x=HBI, y=Anxious)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Heart Beat Intensity', y = 'Postscan Anxiety')
+
+RI_ANX <- ggplot(ind_div, aes(x=RI, y=Anxious)) +
+  geom_point(size=4,aes(colour=Group)) +  
+  geom_smooth(method=lm, se=TRUE, size=2, colour="#000000") +
+  theme(text=element_text(family="Arial", size=12))+
+  scale_shape_manual(values=c(12, 12))+ 
+  theme(axis.title.y = element_text(face="bold", size=24)) + 
+  theme(axis.title.x = element_text(face="bold", size=24)) +
+  theme_set(theme_gray(base_size = 24)) +
+  scale_size_manual(values=3)+ 
+  scale_color_manual(values=c("#339900FF", "#6666FFFF")) +
+  scale_fill_manual(values=c("#339900FF", "#6666FFFF")) +
+  labs(x = 'Respiration Intensity', y = 'Postscan Anxiety')
+
