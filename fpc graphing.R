@@ -242,29 +242,9 @@ spaghetti <- function(y,times,ids,ylab="y",xlab="times",
 }
 
 
-par(mfrow=c(1,3),mgp=c(4.5,1,0),mar=c(4.9,4.5,1.8,0.1))
-plot(time_cont,y1.fpc1.hc.placebo.Mu, type="l", col="#339900FF", las=1, ann=FALSE, lty=1, lwd=3, xlab="Time (Standardized)", ylab="% Signal Change", cex.axis=1.65, cex.lab=1.75, ylim=c(-1.5,1.5))
-mtext(side = 1, text = "Time (Standardized)", font=list(family="Helvetica"), cex = 1.3, line = 3)
-mtext(side = 2, text = "% Signal Change", font=list(family="Helvetica"), cex = 1.3, line = 3)
-lines(time_cont,y1.fpc1.gad.placebo.Mu, type="l", col="#6666FFFF", lty=1, lwd=2)
-#legend("top",legend=c("HC_FPC1","GAD_FPC1"), col=c(4,3),cex=1.25 ,lty=c(1))
-title(main="Group Fits: Saline",cex.main=1.65)
-
-plot(time_cont,y1.fpc1.hc.point5.Mu, type="l", col="#339900FF", las=1, lty=1, lwd=3, xlab="Time (Standardized)", ylab="", cex.axis=1.65, cex.lab=1.75, ylim=c(-1.5,1.5))
-mtext(side = 1, text = "Time (Standardized)", font=list(family="Helvetica"), cex = 1.3, line = 3)
-mtext(side = 2, text = "% Signal Change", font=list(family="Helvetica"), cex = 1.3, line = 3)
-lines(time_cont,y1.fpc1.gad.point5.Mu, type="l", col="#6666FFFF", lty=1, lwd=2)
-legend("top",legend=c("HC_FPC1","GAD_FPC1"), col=c("#339900FF", "#6666FFFF"),cex=1.25, lwd=3, lty=c(1))
-title(main="Group Fits: 0.5 μg",cex.main=1.65)
-
-plot(time_cont,y1.fpc1.hc.two.Mu, type="l", col="#339900FF", las=1, lty=1, lwd=3, xlab="Time (Standardized)", ylab="FPC1", cex.axis=1.65,  cex.lab=1.75, ylim=c(-1.5,1.5))
-mtext(side = 1, text = "Time (Standardized)", font=list(family="Helvetica"), cex = 1.3, line = 3)
-mtext(side = 2, text = "% Signal Change", font=list(family="Helvetica"), cex = 1.3, line = 3)
-lines(time_cont,y1.fpc1.gad.two.Mu, type="l", col="#6666FFFF", lty=1, lwd=2)
-#legend("top",legend=c("HC_FPC1","GAD_FPC1"), col=c(4,3),cex=1.25 ,lty=c(1))
-title(main="Group Fits: 2.0 μg",cex.main=1.65)
-
+#Plot for the 1st principal component by group of the Self ROI with one panel for each ISO dose
 tiff("Self_Group_fpc1_fig.tiff", units="mm", width=250, height=100, res=400)
+#Defining plot size parameters
 par(mfrow=c(1,3),mgp=c(4.5,1,0),mar=c(4,4.9,1.8,0.15))
 plot(time_cont,y1.fpc1.hc.placebo.Mu, type="l", col="#339900FF", las=1, ann=FALSE, lty=1, lwd=3, xlab="", ylab="", cex.axis=1.65, cex.lab=1.75, ylim=c(-1.5,1.5))
 mtext(side = 1, text = "Time (Standardized)", cex = 1.25, line = 2.8)
@@ -288,6 +268,7 @@ lines(time_cont,y1.fpc1.gad.two.Mu, type="l", col="#6666FFFF", lty=1, lwd=2)
 title(main="Group Fits: 2.0 μg",cex.main=1.7)
 dev.off()
 
+#Plot projecting the overall Self ROI FPC fit across groups onto the standardized with one panel for each ISO dose
 tiff("Self_Spaghetti_fig.tiff", units="mm", width=250, height=100, res=400)
 par(mfrow=c(1,3),mar=c(2,2.3,1.9,0.3))
 spaghetti(y = data$y1[data$Dose=="Placebo"], 
